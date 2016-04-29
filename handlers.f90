@@ -76,7 +76,7 @@ module handlers
 	
 	! User data	
 	! Number of points (Must be even)
-	integer(c_int), parameter :: N = 256
+	integer(c_int), parameter :: N = 32
 
 	! In the initial state bubble has ellipse shape
 	! Ellipse parameters
@@ -84,7 +84,7 @@ module handlers
 	real(kind=c_double), parameter :: b = 1.0d0
 	
 	! Time step size
-	real(kind=c_double), parameter :: time_delta = 5.0d-4
+	real(kind=c_double), parameter :: time_delta = 1.0d-3
 
 	! Bernoulli const
 	real(kind=c_double), parameter :: bernoulli_const = 0.0d0
@@ -279,12 +279,15 @@ contains
 		type(c_ptr), intent(in) :: cr
 
 		integer(c_int) :: i
+		real(c_double) :: r
 
+		! Transform cartesian coordinates into coordinates for drawing
 		do i=1,N
 			call get_coordinates_for_drawing (bubble_points_array(i)%x, bubble_points_array(i)%y, &
 				& bubble_points_array(i)%dx, bubble_points_array(i)%dy)
 		end do
 
+		! Draw bubble contour
 		call cairo_set_source_rgb(cr, 1d0, 1d0, 1d0)
 		call cairo_new_path(cr)
 	
@@ -298,6 +301,23 @@ contains
 		call cairo_line_to (cr, bubble_points_array(1)%dx, bubble_points_array(1)%dy)
 		
 		call cairo_fill(cr)
+
+		! Draw points on contour
+		call cairo_set_source_rgb(cr, 1d0, 0d0, 0d0)
+		
+		do i=1,N
+			call cairo_arc(cr, bubble_points_array(i)%dx, bubble_points_array(i)%dy, &
+				& 1.5d0, 0.0d0, 2.0d0 * pi);
+			call cairo_fill(cr)
+		end do
+
+		! TODO
+		r = ((bubble_points_array(N/4)%x - bubble_points_array(N/4-1)%x)**2 + &
+			& (bubble_points_array(N/4)%y - bubble_points_array(N/4-1)%y)**2) / &
+			& ((bubble_points_array(2)%x - bubble_points_array(1)%x)**2 + &
+			& (bubble_points_array(2)%y - bubble_points_array(1)%y)**2)
+		print *, r 
+		
 	end subroutine draw_current_bubble_state
 
 

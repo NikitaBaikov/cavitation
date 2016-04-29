@@ -149,7 +149,7 @@ contains
 
 
 
-	! Integrate f(i) on [dzeta_(i-1), dzeta_i] throug spline
+	! Integrate f(i) on [dzeta_(i-1), dzeta_i] through spline
 	function int_spline_im1_i (f, fm1, u, um1, N) result(s)
 		! f_(i), f_(i-1)
 		real(c_double) :: f, fm1
